@@ -39,15 +39,14 @@ def parse_headlines(html, keyword):
         link  = a.select_one('a.sa_text_title._NLOG_IMPRESSION')['href']
         summary_tag = a.select_one('div.sa_text_lede')
         summary = summary_tag.get_text(strip=True) if summary_tag else "" # summary_tag가 존재하지 않을 경우, ""으로 초기화
-        if (keyword in title) or (keyword in summary):
+        if (keyword.lower() in title.lower()) or (keyword.lower() in summary.lower()): # lower() 함수로 키워드가 대소문자 구분하지 않도록 설정.
             data.append({
                 'title' : title,
                 'link' : link,
                 'summary' : summary
             }) # dictionary로 저장
-        else:
-            print(title)
-            print("헤드라인 혹은 요약에 해당 키워드가 존재하지 않아 누락되었습니다.")
+    if not data:
+        print(f"'{keyword}' 키워드에 해당하는 내용이 없습니다.")
     return data
 
 def save_to_csv(data, path):
@@ -72,7 +71,7 @@ def main(section_code = '105'):
 
     records = parse_headlines(html, keyword=keyword)
 
-    # __file__ : 해당 파일의 위치 (C:\Users\hwaro_0\Desktop\crolling\1weeks\day04\subject.py)
+    # __file__ : 해당 파일의 위치 (C:\Users\hwaro_0\Desktop\crolling\1weeks\day04\subject1.py)
     BASE_DIR = Path(__file__).parent # 현재 파일의 부모 파일의 path 개체 (C:\Users\hwaro_0\Desktop\crolling\1weeks\day04)
     csv_path = BASE_DIR / 'results' / f'news_{section_code}.csv' # 저장할 csv 파일의 전체 경로 지정 / 이는 open 함수에서 사용 가능
     save_to_csv(records, csv_path)
